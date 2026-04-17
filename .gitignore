@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build output (PyInstaller + packaging)
+dist/
+build/
+RealtimeTranslator-Setup/
+*.exe
+*.msi
+*.zip
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Secrets — NEVER commit settings.yaml (contains API keys)
+config/settings.yaml
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs & transcripts
+*.log
+transcript_*.txt
+rewrite_*.txt
+
+# Test audio samples
+*.wav
+*.mp3
+*.flac
+
+# Whisper / HuggingFace model cache (nếu lỡ sinh ra trong repo)
+models/
+.cache/

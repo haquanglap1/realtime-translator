@@ -1,0 +1,96 @@
+# RealtimeTranslator - Example Settings
+# Copy this file to settings.yaml and fill in your API keys
+
+audio:
+  source: loopback          # "mic" | "loopback" | "both"
+  speaker_strategy: source  # "source" | "language" | "pyannote"
+  device_index: null
+  sample_rate: 16000
+  channels: 1
+  blocksize: 1600
+
+diarization:
+  enabled: false
+  provider: pyannote
+  model: pyannote/speaker-diarization-community-1
+  huggingface_token: ""     # Get from https://huggingface.co/settings/tokens
+  device: cuda
+  window_ms: 12000
+  max_speakers: 2
+  num_speakers: 0
+
+vad:
+  # Lớp 1 — Energy-based VAD (RMS trên từng frame 30ms)
+  speech_threshold: 0.025       # Nâng nếu môi trường ồn (văn phòng: 0.025–0.04)
+  min_speech_frames: 15         # Bỏ segment < 450ms (Whisper hay ảo giác với audio ngắn)
+  silence_frames_to_end: 10
+  max_speech_frames: 100
+  frame_ms: 30
+  # Lớp 2 — Quality gate trước khi gọi STT (áp dụng cho cả local + API)
+  min_segment_duration_ms: 500  # Loại segment quá ngắn
+  min_segment_rms: 0.02         # Loại segment RMS thấp (chỉ có noise nền)
+  min_active_ratio: 0.35        # % frame có energy cao — loại typing/click rời rạc
+  # Lớp 3 — Silero VAD (deep-learning, tuỳ chọn). Cài: pip install silero-vad
+  use_silero_vad: false
+  silero_speech_prob: 0.5       # Ngưỡng xác suất speech (0.0–1.0)
+
+stt:
+  engine: faster-whisper     # "faster-whisper" | "openai-api"
+  model: medium
+  device: cuda               # "cuda" | "cpu"
+  compute_type: float16
+  language: null              # null = auto-detect
+  beam_size: 5
+  api_base: "https://api.openai.com/v1"
+  api_key: ""                # Your OpenAI/Groq API key
+  api_model: whisper-1
+  # ── Chống hallucination (Whisper hay "bịa" khi audio chỉ có noise) ──
+  vad_filter: true           # Silero VAD trong faster-whisper, cắt im lặng trước decode
+  no_speech_threshold: 0.6   # Reject segment nếu xác suất "không phải speech" cao hơn
+  log_prob_threshold: -1.0   # Reject nếu log-prob trung bình thấp hơn
+  compression_ratio_threshold: 2.4  # Reject nếu text lặp bất thường
+  initial_prompt: ""         # Gợi ý ngữ cảnh mồi cho Whisper (ví dụ: "Meeting about AI.")
+  hallucination_blocklist:   # Các câu Whisper hay ảo giác — sẽ bị skip
+    - "thank you for watching"
+    - "thanks for watching"
+    - "please subscribe"
+    - "like and subscribe"
+    - "see you next time"
+    - "cảm ơn các bạn đã xem"
+    - "cảm ơn các bạn đã theo dõi"
+    - "đừng quên like và subscribe"
+    - "ご視聴ありがとうございました"
+
+llm:
+  enabled: false
+  provider: ollama           # "ollama" | "openai" | "groq" | "custom"
+  base_url: "http://localhost:11434/v1"
+  api_key: "ollama"
+  model: "qwen2.5:7b"
+  target_language: Vietnamese
+  context_segments: 5
+  temperature: 0.3
+  custom_prompt: ""
+  glossary: ""
+  reference_text: ""
+  correction_instructions: ""
+  batch_size: 1
+  thread_count: 5
+  transcript_save_dir: ""
+
+ui:
+  opacity: 0.95                # Độ trong suốt toàn window (0.0–1.0)
+  transcript_bg_opacity: 1.0   # Độ đục nền panel transcript (0.0 = trong suốt, 1.0 = đặc)
+  font_size: 16
+  font_color: "#FFFFFF"
+  shadow_color: "#000000"
+  show_original: true
+  max_lines: 6
+  position: "bottom-right"
+  always_on_top: true
+  width: 700
+  height: 260
+
+output:
+  srt_dir: "~/Desktop"
+  auto_name: true
